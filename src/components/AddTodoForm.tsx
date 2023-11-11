@@ -5,13 +5,27 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
 
-type AddTodoFormProps = {};
+type AddTodoFormProps = {
+    setOptimisticTodos: (
+        action: Todo[] | ((pendingState: Todo[]) => Todo[])
+    ) => void;
+};
 
-const AddTodoForm = ({}: AddTodoFormProps) => {
+const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
     const formRef = useRef<HTMLFormElement>(null);
     return (
         <form
             action={async (formData: FormData) => {
+                const optimisticTodo: Todo = {
+                    id: crypto.getRandomValues(new Uint32Array(1))[0],
+                    text: formData.get("todotext") as string,
+                    completed: false,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                };
+
+                setOptimisticTodos((prev) => [optimisticTodo, ...prev]);
+
                 await addTodo(formData);
                 formRef.current?.reset();
             }}
@@ -35,8 +49,12 @@ const SubmitButton = ({}: SubmitButtonProps) => {
     const { pending } = useFormStatus();
 
     return (
-        <button type="submit" className="ml-auto" disabled={pending}>
-            <ArrowRightIcon className="w-5 h-5" />
+        <button type="submit" className={`ml-auto`} disabled={pending}>
+            {pending ? (
+                <div className="w-5 h-5 rounded-full border-t-2 border-sky-300 animate-spin"></div>
+            ) : (
+                <ArrowRightIcon className="w-5 h-5 text-sky-300" />
+            )}
         </button>
     );
 };
