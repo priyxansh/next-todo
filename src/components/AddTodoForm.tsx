@@ -27,6 +27,7 @@ const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
                 setOptimisticTodos((prev) => [optimisticTodo, ...prev]);
 
                 await addTodo(formData);
+                
                 formRef.current?.reset();
             }}
             className=" px-2 rounded bg-slate-800 flex gap-2 items-center group focus-within:ring-2"
@@ -37,6 +38,8 @@ const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
                 name="todotext"
                 className="bg-transparent border-none outline-none focus:ring-0 focus:ring-offset-0 w-full"
                 placeholder="Add new todo"
+                required
+                onInvalid={(e) => e.preventDefault()}
             />
             <SubmitButton />
         </form>

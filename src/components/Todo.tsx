@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { useTransition } from "react";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { checkTodo } from "@/actions/checkTodo";
