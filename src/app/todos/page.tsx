@@ -1,6 +1,4 @@
-import AddTodoForm from "@/components/AddTodoForm";
 import TodosComponent from "@/components/TodosComponent";
-import ScrollArea from "@/components/ui/ScrollArea";
 import prisma from "@/lib/prisma";
 
 type TodosProps = {};
