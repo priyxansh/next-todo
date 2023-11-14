@@ -40,6 +40,7 @@ const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
                 placeholder="Add new todo"
                 required
                 onInvalid={(e) => e.preventDefault()}
+                autoComplete="off"
             />
             <SubmitButton />
         </form>
