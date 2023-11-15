@@ -1,7 +1,7 @@
 import TodosComponent from "@/components/TodosComponent";
+import { authOptions } from "@/lib/next-auth";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
 type TodosProps = {};
