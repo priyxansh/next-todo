@@ -1,5 +1,5 @@
 type Todo = {
-    id: number;
+    id: string;
     text: string;
     completed: boolean;
     createdAt: Date;

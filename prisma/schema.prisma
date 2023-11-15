@@ -5,22 +5,29 @@ generator client {
     provider = "prisma-client-js"
 }
 
-// datasource db {
-//     provider = "postgresql"
-//     url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-//     directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-// }
-
 datasource db {
     provider  = "postgresql"
     url       = env("DATABASE_URL")
     directUrl = env("DIRECT_URL")
 }
 
+model User {
+    id        String   @id @default(uuid())
+    name      String
+    email     String   @unique
+    password  String
+    image     String?
+    todos     Todo[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
 model Todo {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     text      String
     completed Boolean  @default(false)
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
 }

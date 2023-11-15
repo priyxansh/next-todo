@@ -3,8 +3,7 @@
 import { useTransition } from "react";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { checkTodo } from "@/actions/checkTodo";
-import { deleteTodo } from "@/actions/deleteTodo";
+import { checkTodo, deleteTodo } from "@/actions/todoActions";
 
 type TodoProps = Todo & {
     setOptimisticTodos: (

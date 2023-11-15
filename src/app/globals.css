@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components{
+    .firefox-input-reset:autofill{
+        background: transparent;
+        filter: none;
+    }
+}

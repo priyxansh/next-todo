@@ -1,6 +1,6 @@
 "use client";
 
-import { addTodo } from "@/actions/addTodo";
+import { addTodo } from "@/actions/todoActions";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
@@ -17,7 +17,7 @@ const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
         <form
             action={async (formData: FormData) => {
                 const optimisticTodo: Todo = {
-                    id: crypto.getRandomValues(new Uint32Array(1))[0],
+                    id: crypto.randomUUID(),
                     text: formData.get("todotext") as string,
                     completed: false,
                     createdAt: new Date(),
@@ -27,7 +27,7 @@ const AddTodoForm = ({ setOptimisticTodos }: AddTodoFormProps) => {
                 setOptimisticTodos((prev) => [optimisticTodo, ...prev]);
 
                 await addTodo(formData);
-                
+
                 formRef.current?.reset();
             }}
             className=" px-2 rounded bg-slate-800 flex gap-2 items-center group focus-within:ring-2"
