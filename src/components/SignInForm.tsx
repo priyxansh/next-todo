@@ -11,94 +11,100 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 type SignInFormProps = {
-    inputFields: {
-        label: string;
-        type: string;
-        id: string;
-        name: string;
-        placeholder?: string;
-    }[];
+  inputFields: {
+    label: string;
+    type: string;
+    id: string;
+    name: string;
+    placeholder?: string;
+  }[];
 };
 
 type Inputs = {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 };
 
 const SignInForm = ({ inputFields }: SignInFormProps) => {
-    const router = useRouter()
-    const [pending, setPending] = useState(false);
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        setError,
-    } = useForm<Inputs>({
-        resolver: zodResolver(signinSchema),
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<Inputs>({
+    resolver: zodResolver(signinSchema),
+  });
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setPending(true);
+
+    const signInResponse = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      isSignup: false,
+      redirect: false,
     });
 
-    const onSubmit: SubmitHandler<Inputs> = async (data) => {
-        setPending(true);
+    if (signInResponse?.error === "User not found") {
+      setError("email", {
+        type: "manual",
+        message: signInResponse.error,
+      });
+    }
 
-        const signInResponse = await signIn("credentials", {
-            email: data.email,
-            password: data.password,
-            isSignup: false,
-            redirect: false,
-        });
+    if (signInResponse?.error === "Invalid credentials") {
+      setError("password", {
+        type: "manual",
+        message: signInResponse.error,
+      });
+    }
 
-        if (signInResponse?.error === "User not found") {
-            setError("email", {
-                type: "manual",
-                message: signInResponse.error,
-            });
-        }
+    if (signInResponse?.error === "CredentialsSignin") {
+      setError("email", {
+        type: "manual",
+        message: "Couldn't sign you in. Please try again.",
+      });
+    }
 
-        if (signInResponse?.error === "Invalid credentials") {
-            setError("password", {
-                type: "manual",
-                message: signInResponse.error,
-            });
-        }
+    setPending(false);
+    console.log(signInResponse);
 
-        if (signInResponse?.error === "CredentialsSignin") {
-            setError("email", {
-                type: "manual",
-                message: "Couldn't sign you in. Please try again.",
-            });
-        }
+    if (!signInResponse?.error) {
+      router.push("/");
+    }
+  };
 
-        setPending(false);
-        console.log(signInResponse);
-        
-
-        if (!signInResponse?.error) {
-            router.push("/")
-        }
-    };
-
-    return (
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-            {inputFields.map(({ type, id, name, label, placeholder }) => (
-                <AuthFormInput
-                    type={type}
-                    id={id}
-                    name={name}
-                    register={register}
-                    label={label}
-                    placeholder={placeholder}
-                    key={id}
-                    errors={errors}
-                />
-            ))}
-            <Link href={"/auth/signup"} className="text-center">
-                Not a user?{" "}
-                <span className="underline text-sky-300">Become one now</span>
-            </Link>
-            <SubmitButton pending={pending} text="Sign In" />
-        </form>
-    );
+  return (
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+      {inputFields.map(({ type, id, name, label, placeholder }) => (
+        <AuthFormInput
+          type={type}
+          id={id}
+          name={name}
+          register={register}
+          label={label}
+          placeholder={placeholder}
+          key={id}
+          errors={errors}
+        />
+      ))}
+      <Link href={"/auth/signup"} className="text-center">
+        Not a user?{" "}
+        <span className="underline text-sky-300">Become one now</span>
+      </Link>
+      <SubmitButton pending={pending} text="Sign In" />
+      <button
+        className={`px-4 py-2 bg-sky-300 text-slate-800 transition-colors rounded-lg hover:bg-slate-900 border-2 border-sky-300 hover:text-sky-300 active:scale-95`}
+        type="button"
+        onClick={() => signIn("github", { callbackUrl: "/" })}
+      >
+        Sign in with GitHub
+      </button>
+    </form>
+  );
 };
 
 export default SignInForm;
