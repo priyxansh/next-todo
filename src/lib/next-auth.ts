@@ -159,12 +159,24 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    jwt: async ({ token, user, account }) => {
+    jwt: async ({ token, user, account, trigger }) => {
       const loginMethod = account?.provider;
 
       if (user) {
-        token.id = user.id;
-        token.loginMethod = loginMethod;
+        if (trigger === "signIn" && loginMethod === "github") {
+          const existingUser = await prisma.user.findUnique({
+            where: {
+              githubId: user.id,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          const id = existingUser?.id;
+          token.id = id;
+          token.loginMethod = loginMethod;
+        }
       }
       return token;
     },
