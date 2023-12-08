@@ -52,11 +52,13 @@ export const authOptions: NextAuthOptions = {
                 name: name as string,
                 email: email as string,
                 password: password as string,
+                credentialsAvailable: true,
               },
               select: {
                 id: true,
                 name: true,
                 email: true,
+                image: true,
               },
             });
 
@@ -81,6 +83,7 @@ export const authOptions: NextAuthOptions = {
               id: true,
               name: true,
               email: true,
+              image: true,
               password: true,
             },
           });
@@ -101,6 +104,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             name: user.name,
             email: user.email,
+            image: user.image,
           };
 
           return returnObject;
@@ -122,7 +126,7 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ user, account }) => {
       try {
         if (account?.provider === "github") {
-          const {id, name, email, image } = user!;
+          const { id, name, email, image } = user!;
 
           const existingUser = await prisma.user.findUnique({
             where: {
@@ -145,7 +149,7 @@ export const authOptions: NextAuthOptions = {
               name: name as string,
               email: email as string,
               image: image,
-              githubId: id
+              githubId: id,
             },
           });
         }
@@ -157,6 +161,7 @@ export const authOptions: NextAuthOptions = {
     },
     jwt: async ({ token, user, account }) => {
       const loginMethod = account?.provider;
+
       if (user) {
         token.id = user.id;
         token.loginMethod = loginMethod;
@@ -164,8 +169,14 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      session.user.id = token.id as string;
-      session.user.loginMethod = token.loginMethod as string;
+      const { id, loginMethod } = token;
+
+      session.user = {
+        ...session.user,
+        id: id as string,
+        loginMethod: loginMethod as string,
+      };
+
       return session;
     },
   },
