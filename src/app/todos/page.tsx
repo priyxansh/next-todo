@@ -11,6 +11,9 @@ const Todos = async ({}: TodosProps) => {
 
     if (!session) redirect("/auth/signin");
 
+    console.log(session.user);
+    
+
     const todos: Todo[] = await prisma.todo.findMany({
         where: {
             userId: session.user.id,

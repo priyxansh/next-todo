@@ -173,10 +173,14 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          const id = existingUser?.id;
-          token.id = id;
+          token.id = existingUser?.id;
           token.loginMethod = loginMethod;
+
+          return token;
         }
+
+        token.id = user.id;
+        token.loginMethod = loginMethod;
       }
       return token;
     },
